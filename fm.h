@@ -1,7 +1,7 @@
 #include "common.h"
 #include "hash.h"
 
-#define FM_HEIGHT 1024
+#define FM_HEIGHT 128
 #define FM_WIDTH 32
 
 class FM {
@@ -12,7 +12,6 @@ private:
 public:
     FM(uint dividend):dividend(dividend){
         memset(sketch, 0, sizeof(sketch)); 
-        srand(time(0));
         for (int i = 0; i < FM_HEIGHT; ++i) 
             hash_seed[i]=rand()%50; 
     }
@@ -33,8 +32,9 @@ double FM::query() {
     double sum = 0;
     for(int i = 0; i < FM_HEIGHT; ++i) {
         uint pos = 0;
-        for(; pos<FM_WIDTH && sketch[i][pos]; ++pos)
-        sum += pow(2.0, (double)pos)/0.77351;
+        for(; pos<FM_WIDTH && sketch[i][pos]; ++pos);
+        printf("%u\n", pos);
+        sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/0.77351;
     }
     return sum/FM_HEIGHT;
 }

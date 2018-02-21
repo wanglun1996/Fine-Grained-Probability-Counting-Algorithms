@@ -14,7 +14,7 @@ void random_str(uchar* str, uint len) {
 int main() {
     srand(time(0));
     Record record;
-    FM fm(2);
+    FM fm(4);
     for(int i = 0; i < 10000; ++i) {
       uint len = rand()%1024;
       random_str(str, len);

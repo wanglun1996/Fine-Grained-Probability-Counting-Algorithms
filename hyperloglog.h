@@ -5,13 +5,22 @@
 
 class HyperLogLog {
 private:
-    ull sketch[HYPERLOGLOG_HEIGHT];
+    uint sketch[HYPERLOGLOG_HEIGHT];
+    uint bucket_seed;
+    uint hash_seed[HYPERLOGLOG_HEIGHT];
+    uint dividend;
 public:
-    void insert();
+    HyperLogLog(uint dividend):dividend(dividend){
+        memset(sketch, 0, sizeof(sketch));
+        bucket_seed = rand()%HYPERLOGLOG_HEIGHT;
+        for (int i = 0; i < HYPERLOGLOG_HEIGHT; ++i)
+            hash_seed[i] = rand()%50;
+    }
+    void insert(uchar* str, uint len);
     void query();
 };
 
-void HyperLogLog::insert() {
+void HyperLogLog::insert(uchar* str, uint len) {
 
 }
 
