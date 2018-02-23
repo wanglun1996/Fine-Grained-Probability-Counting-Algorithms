@@ -8,6 +8,7 @@
 #include "time.h"
 #include "string"
 #include "map"
+#include "set"
 using namespace std;
 
 #define min(x, y) (x<y?x:y)
@@ -31,7 +32,7 @@ void penntreebank_str(uchar* str, FILE* stream) {
 void trace_str(uchar* str, FILE* stream) {
     char tmp[128];
     fscanf(stream, "%s", str);
-    for(int i = 0; i < 3; ++i) {
+    for(int i = 0; i < 4; ++i) {
         fscanf(stream, "%s", tmp);
         strcat((char*)str, tmp);
     }

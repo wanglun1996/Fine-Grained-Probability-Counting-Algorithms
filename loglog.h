@@ -1,7 +1,7 @@
 #include "common.h"
 #include "hash.h"
 
-#define LOGLOG_HEIGHT 128
+#define LOGLOG_HEIGHT 64
 
 class LogLog {
 private:
@@ -17,17 +17,17 @@ public:
             hash_seed[i] = rand()%50;
     }
     void insert(uchar* str, uint len);
-    void query(double adjust);
+    double query(double adjust);
     void print();
 };
 
 void LogLog::insert(uchar* str, uint len) {
     uint index = BOB32(str, len, bucket_seed)%LOGLOG_HEIGHT;
     uint pos = GD_BOB128(str, len, hash_seed[index], dividend);
-    if(pos==sketch[index]+1) ++sketch[index];
+    sketch[index] = max(sketch[index], pos);
 }
 
-void LogLog::query(double adjust) {
+double LogLog::query(double adjust) {
     double sum = 0;
     for(int i = 0; i < LOGLOG_HEIGHT; ++i) {
         sum += sketch[i];

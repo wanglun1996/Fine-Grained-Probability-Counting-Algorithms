@@ -1,7 +1,7 @@
 #include "common.h"
 #include "hash.h"
 
-#define HYPERLOGLOG_HEIGHT 1024
+#define HYPERLOGLOG_HEIGHT 64
 
 class HyperLogLog {
 private:
@@ -17,21 +17,23 @@ public:
             hash_seed[i] = rand()%50;
     }
     void insert(uchar* str, uint len);
-    void query(double adjust);
+    double query(double adjust);
+    void print();
 };
 
 void HyperLogLog::insert(uchar* str, uint len) {
     uint index = BOB32(str, len, bucket_seed)%HYPERLOGLOG_HEIGHT;
     uint pos = GD_BOB128(str, len, hash_seed[index], dividend);
-    if(pos==sketch[index]+1) ++sketch[index];
+    sketch[index] = max(sketch[index], pos);
 }
 
-void HyperLogLog::query(double adjust) {
+double HyperLogLog::query(double adjust) {
     double sum = 0;
     for(int i = 0; i < HYPERLOGLOG_HEIGHT; ++i) {
         sum += 1.0/sketch[i];
         //sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
     }
+    printf("%lf\n", sum);
     return adjust*HYPERLOGLOG_HEIGHT*(dividend-1.0)*pow(dividend/(dividend-1.0), HYPERLOGLOG_HEIGHT/sum);
 }
 
