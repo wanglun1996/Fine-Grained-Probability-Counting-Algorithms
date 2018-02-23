@@ -17,15 +17,28 @@ public:
             hash_seed[i] = rand()%50;
     }
     void insert(uchar* str, uint len);
-    void query();
+    void query(double adjust);
+    void print();
 };
 
 void LogLog::insert(uchar* str, uint len) {
-    for(int i = 0; i < FM_HEIGHT; ++i) {
-        
-    }
+    uint index = BOB32(str, len, bucket_seed)%LOGLOG_HEIGHT;
+    uint pos = GD_BOB128(str, len, hash_seed[index], dividend);
+    if(pos==sketch[index]+1) ++sketch[index];
 }
 
-void LogLog::query() {
+void LogLog::query(double adjust) {
+    double sum = 0;
+    for(int i = 0; i < LOGLOG_HEIGHT; ++i) {
+        sum += sketch[i];
+        //sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
+    }
+    return adjust*LOGLOG_HEIGHT*(dividend-1.0)*pow(dividend/(dividend-1.0), sum/LOGLOG_HEIGHT);
+}
 
+void LogLog::print() {
+    for(int i = 0; i < LOGLOG_HEIGHT; ++i) {
+        printf("%u ", sketch[i]);
+        printf("\n");
+    }
 }

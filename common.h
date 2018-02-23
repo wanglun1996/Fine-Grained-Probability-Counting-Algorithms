@@ -37,4 +37,10 @@ void trace_str(uchar* str, FILE* stream) {
     }
 }
 
+void caida_str(uchar* str, FILE* stream) {
+    for(int i = 0; i < 13; ++i)
+        str[i] = fgetc(stream); 
+    str[13] = 0;
+}
+
 #endif

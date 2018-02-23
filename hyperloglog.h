@@ -17,13 +17,27 @@ public:
             hash_seed[i] = rand()%50;
     }
     void insert(uchar* str, uint len);
-    void query();
+    void query(double adjust);
 };
 
 void HyperLogLog::insert(uchar* str, uint len) {
-
+    uint index = BOB32(str, len, bucket_seed)%HYPERLOGLOG_HEIGHT;
+    uint pos = GD_BOB128(str, len, hash_seed[index], dividend);
+    if(pos==sketch[index]+1) ++sketch[index];
 }
 
-void HyperLogLog::query() {
+void HyperLogLog::query(double adjust) {
+    double sum = 0;
+    for(int i = 0; i < HYPERLOGLOG_HEIGHT; ++i) {
+        sum += 1.0/sketch[i];
+        //sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
+    }
+    return adjust*HYPERLOGLOG_HEIGHT*(dividend-1.0)*pow(dividend/(dividend-1.0), HYPERLOGLOG_HEIGHT/sum);
+}
 
+void HyperLogLog::print() {
+    for(int i = 0; i < HYPERLOGLOG_HEIGHT; ++i) {
+        printf("%u ", sketch[i]);
+        printf("\n");
+    }
 }
