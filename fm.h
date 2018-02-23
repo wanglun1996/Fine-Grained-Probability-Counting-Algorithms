@@ -1,7 +1,7 @@
 #include "common.h"
 #include "hash.h"
 
-#define FM_HEIGHT 1
+#define FM_HEIGHT 128
 #define FM_WIDTH 64
 
 class FM {
@@ -17,6 +17,7 @@ public:
     }
     void insert(uchar* str, uint len);
     double query(double adjust);
+    void print();
 };
 
 void FM::insert(uchar* str, uint len) {
@@ -36,4 +37,13 @@ double FM::query(double adjust) {
         sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
     }
     return sum/FM_HEIGHT;
+}
+
+void FM::print() {
+    for(int i = 0; i < FM_HEIGHT; ++i) {
+        for(int j = 0; j < FM_WIDTH; ++j) {
+            printf("%d ", sketch[i][j]);
+        }
+        printf("\n");
+    }
 }
