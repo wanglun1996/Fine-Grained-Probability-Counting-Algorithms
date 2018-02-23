@@ -27,7 +27,7 @@ void HyperLogLog::insert(uchar* str, uint len) {
     sketch[index] = max(sketch[index], pos);
 }
 
-double HyperLogLog::query(double adjust) {
+double HyperLogLog::query(double adjust=0.39701) {
     double sum = 0;
     for(int i = 0; i < HYPERLOGLOG_HEIGHT; ++i) {
         sum += 1.0/sketch[i];

@@ -27,7 +27,7 @@ void LogLog::insert(uchar* str, uint len) {
     sketch[index] = max(sketch[index], pos);
 }
 
-double LogLog::query(double adjust) {
+double LogLog::query(double adjust=0.39701) {
     double sum = 0;
     for(int i = 0; i < LOGLOG_HEIGHT; ++i) {
         sum += sketch[i];

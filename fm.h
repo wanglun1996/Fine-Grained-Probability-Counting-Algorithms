@@ -34,7 +34,7 @@ void FM::insert(uchar* str, uint len) {
 
 // Now only apply for dividend = 2
 // later version will be updated after mathematical derivation
-double FM::query(double adjust) {
+double FM::query(double adjust=0.77351) {
     double sum = 0;
     for(int i = 0; i < FM_HEIGHT; ++i) {
         uint pos = 0;
