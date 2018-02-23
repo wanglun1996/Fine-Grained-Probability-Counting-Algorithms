@@ -21,7 +21,9 @@ public:
 };
 
 void LogLog::insert(uchar* str, uint len) {
-
+    for(int i = 0; i < FM_HEIGHT; ++i) {
+        
+    }
 }
 
 void LogLog::query() {

@@ -73,76 +73,52 @@ uint GD_BOB32(uchar* str, uint len, uint ini, uint dividend) {
   return result;
 }
 
-ull Murmur64 (uchar* str, uint len, uint ini)  
-{  
-	  uint seed = big_prime[ini];
-    uint m = 0x5bd1e995;  
-    uint r = 24;  
-   
-    uint h1 = seed ^ len;  
-    uint h2 = 0;    
-   
-    while(len >= 8)  
-    {  
-        uint k1 = *str++;  
-        k1 *= m; k1 ^= k1 >> r; k1 *= m;  
-        h1 *= m; h1 ^= k1;  
-        len -= 4;  
-   
-        uint k2 = *str++;  
-        k2 *= m; k2 ^= k2 >> r; k2 *= m;  
-        h2 *= m; h2 ^= k2;  
-        len -= 4;  
-    }  
-   
-    if(len >= 4)  
-    {  
-        uint k1 = *str++;  
-        k1 *= m; k1 ^= k1 >> r; k1 *= m;  
-        h1 *= m; h1 ^= k1;  
-        len -= 4;  
-    }  
-     
-    h2 ^= ((unsigned char*)str)[0];  
-    h2 *= m;  
-   
-    h1 ^= h2 >> 18; h1 *= m;  
-    h2 ^= h1 >> 22; h2 *= m;  
-    h1 ^= h2 >> 17; h1 *= m;  
-    h2 ^= h1 >> 19; h2 *= m;  
-   
-    ull h = h1;  
-   
-    h = (h << 32) | h2;  
-   
-    return h;  
-}
-
-uint GD_Murmur64(uchar* str, uint len, uint ini, uint dividend) {
-  uint uniform_hash = Murmur64(str, len, ini);
-  uint result = 0;
-  while(uniform_hash%dividend) {
-    ++result;
-    uniform_hash /= dividend;
-  }
-  return result;
-}
-
-uint GD_Murmur128(uchar* str, uint len, uint ini, uint dividend) {
-  uint uniform_hash1 = Murmur64(str, len, ini);
-  uint uniform_hash2 = Murmur64(str, len, (ini+1)%50);
+uint GD_BOB64(uchar* str, uint len, uint ini, uint dividend) {
+  uint uniform_hash1 = BOB32(str, len, ini);
+  uint uniform_hash2 = BOB32(str, len, (ini+13)%50);
   uint result = 0;
   while(uniform_hash1%dividend) {
     ++result;
     uniform_hash1 /= dividend;
   }
-  if(result>=(64/dividend)) {
+  if(result>=(32/(int)(log(dividend)/log(2)))) {
     while(uniform_hash2%dividend) {
       ++result;
       uniform_hash2 /= dividend;
     }
   }
-  return result;  
+  return result;
+}
+
+uint GD_BOB128(uchar* str, uint len, uint ini, uint dividend) {
+  uint uniform_hash1 = BOB32(str, len, ini);
+  uint uniform_hash2 = BOB32(str, len, (ini+13)%50);
+  uint uniform_hash3 = BOB32(str, len, (ini+17)%50);
+  uint uniform_hash4 = BOB32(str, len, (ini+23)%50);
+  uint result = 0;
+  while(uniform_hash1%dividend) {
+    ++result;
+    uniform_hash1 /= dividend;
+  }
+  if(result>=(32/(int)(log(dividend)/log(2)))) {
+    while(uniform_hash2%dividend) {
+      ++result;
+      uniform_hash2 /= dividend;
+    }
+  }
+  if(result>=(64/(int)(log(dividend)/log(2)))) {
+    while(uniform_hash3%dividend) {
+      ++result;
+      uniform_hash3 /= dividend;
+    }
+  }
+  if(result>=(96/(int)(log(dividend)/log(2)))) {
+    while(uniform_hash3%dividend) {
+      ++result;
+      uniform_hash3 /= dividend;
+    }
+  }
+  return result;
 }
 
 #endif

@@ -1,8 +1,8 @@
 #include "common.h"
 #include "hash.h"
 
-#define FM_HEIGHT 128
-#define FM_WIDTH 32
+#define FM_HEIGHT 1
+#define FM_WIDTH 64
 
 class FM {
 private:
@@ -16,25 +16,24 @@ public:
             hash_seed[i]=rand()%50; 
     }
     void insert(uchar* str, uint len);
-    double query();
+    double query(double adjust);
 };
 
 void FM::insert(uchar* str, uint len) {
     for(int i = 0; i < FM_HEIGHT; ++i) {
-        uint pos = GD_Murmur128(str, len, hash_seed[i], dividend);
+        uint pos = GD_BOB128(str, len, hash_seed[i], dividend);
         sketch[i][pos] = 1;
     }
 }
 
 // Now only apply for dividend = 2
 // later version will be updated after mathematical derivation
-double FM::query() {
+double FM::query(double adjust) {
     double sum = 0;
     for(int i = 0; i < FM_HEIGHT; ++i) {
         uint pos = 0;
         for(; pos<FM_WIDTH && sketch[i][pos]; ++pos);
-        printf("%u\n", pos);
-        sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/0.77351;
+        sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
     }
     return sum/FM_HEIGHT;
 }
