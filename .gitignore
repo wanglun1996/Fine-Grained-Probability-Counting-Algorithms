@@ -1,3 +1,4 @@
 test
 dataset/trace
 dataset/caida
+result/*
