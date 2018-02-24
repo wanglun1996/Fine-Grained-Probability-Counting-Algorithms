@@ -47,8 +47,8 @@ double learn_trace() {
         LogLog loglog(4);
         HyperLogLog hyperloglog(4);
         for(int i = 0; i < STR_NUM; ++i) {
-            uint len = rand()%STR_LEN;
             trace_str(str, trace);
+            uint len = strlen((const char*)str);
             record.insert(string((char*)str, len));
             fm.insert(str, len);
             loglog.insert(str, len);
@@ -75,8 +75,8 @@ double learn_caida() {
         LogLog loglog(4);
         HyperLogLog hyperloglog(4);
         for(int i = 0; i < STR_NUM; ++i) {
-            uint len = rand()%STR_LEN;
-            trace_str(str, caida);
+            caida_str(str, caida);
+            uint len = strlen((const char*)str);
             record.insert(string((char*)str, len));
             fm.insert(str, len);
             loglog.insert(str, len);
@@ -102,8 +102,8 @@ double learn_penntreebank() {
         LogLog loglog(4);
         HyperLogLog hyperloglog(4);
         for(int i = 0; i < STR_NUM; ++i) {
-            uint len = rand()%STR_LEN;
-            trace_str(str, ptb);
+            penntreebank_str(str, ptb);
+            uint len = strlen((const char*)str);
             record.insert(string((char*)str, len));
             fm.insert(str, len);
             loglog.insert(str, len);
@@ -119,27 +119,147 @@ double learn_penntreebank() {
     fclose(ptb);
 }
 
-void test_fm() {
+void test_loglog() {
+    FILE* trace = fopen("./dataset/trace", "r");
+    FILE* caida = fopen("./dataset/caida", "r");
+    FILE* penntreebank = fopen("./dataset/ptb", "r");
     // random_str
+    double sum[2];
+    memset(sum, 0, sizeof(sum));
     for(int k = 0; k < REPEAT_TIME; ++k) {
         Record record;
-        FM fm_2(2);
-        FM fm_4(4);
-
+        LogLog loglog_2(2);
+        LogLog loglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            random_str(str, len);
+            record.insert(string((char*)str, len));
+            loglog_2.insert(str, len);
+            loglog_4.insert(str, len);
+        }
+        sum[0] += loglog_2.query(1)/record.query();
+        sum[1] += loglog_4.query(1)/record.query();
     }
     //trace
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        LogLog loglog_2(2);
+        LogLog loglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            trace_str(str, trace);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            loglog_2.insert(str, len);
+            loglog_4.insert(str, len);
+        }
+        sum[0] += loglog_2.query(1)/record.query();
+        sum[1] += loglog_4.query(1)/record.query();
+    }
     //caida
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        LogLog loglog_2(2);
+        LogLog loglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            caida_str(str, caida);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            loglog_2.insert(str, len);
+            loglog_4.insert(str, len);
+        }
+        sum[0] += loglog_2.query(1)/record.query();
+        sum[1] += loglog_4.query(1)/record.query();
+    }
     //penn tree bank
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        LogLog loglog_2(2);
+        LogLog loglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            penntreebank_str(str, penntreebank);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            loglog_2.insert(str, len);
+            loglog_4.insert(str, len);
+        }
+        sum[0] += loglog_2.query(1)/record.query();
+        sum[1] += loglog_4.query(1)/record.query();
+    }
 }
 
-void test_loglog() {
-
+void test_hyper() {
+    FILE* trace = fopen("./dataset/trace", "r");
+    FILE* caida = fopen("./dataset/caida", "r");
+    FILE* penntreebank = fopen("./dataset/ptb", "r");
+    // random_str
+    double sum[2];
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        HyperLogLog hyperloglog_2(2);
+        HyperLogLog hyperloglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            random_str(str, len);
+            record.insert(string((char*)str, len));
+            hyperloglog_2.insert(str, len);
+            hyperloglog_4.insert(str, len);
+        }
+        sum[0] += hyperloglog_2.query(1)/record.query();
+        sum[1] += hyperloglog_4.query(1)/record.query();
+    }
+    //trace
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        HyperLogLog hyperloglog_2(2);
+        HyperLogLog hyperloglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            trace_str(str, trace);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            hyperloglog_2.insert(str, len);
+            hyperloglog_4.insert(str, len);
+        }
+        sum[0] += hyperloglog_2.query(1)/record.query();
+        sum[1] += hyperloglog_4.query(1)/record.query();
+    }
+    //caida
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        HyperLogLog hyperloglog_2(2);
+        HyperLogLog hyperloglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            caida_str(str, caida);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            hyperloglog_2.insert(str, len);
+            hyperloglog_4.insert(str, len);
+        }
+        sum[0] += hyperloglog_2.query(1)/record.query();
+        sum[1] += hyperloglog_4.query(1)/record.query();
+    }
+    //penn tree bank
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        HyperLogLog hyperloglog_2(2);
+        HyperLogLog hyperloglog_4(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            penntreebank_str(str, penntreebank);
+            uint len = strlen((const char*)str);
+            record.insert(string((char*)str, len));
+            hyperloglog_2.insert(str, len);
+            hyperloglog_4.insert(str, len);
+        }
+        sum[0] += hyperloglog_2.query(1)/record.query();
+        sum[1] += hyperloglog_4.query(1)/record.query();
+    }
 }
-
-void test_hyperloglog() {
-
-}
-
 int main() {
     srand(time(0));
 
