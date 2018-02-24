@@ -6,60 +6,196 @@
 #include "hyperloglog.h"
 
 #define STR_LEN 128
-#define STR_NUM 100000
-#define REPEAT_TIME 1
+#define STR_NUM 1000
+#define REPEAT_TIME 16
 
 uchar str[STR_LEN];
 uint histogram[256];
 
+double learn_random() {
+    double sum[3];
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        FM fm(4);
+        LogLog loglog(4);
+        HyperLogLog hyperloglog(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            random_str(str, len);
+            record.insert(string((char*)str, len));
+            fm.insert(str, len);
+            loglog.insert(str, len);
+            hyperloglog.insert(str, len);
+        }
+        sum[0] += fm.query(1)/record.query();
+        sum[1] += loglog.query(1)/record.query();
+        sum[2] += hyperloglog.query(1)/record.query();
+    }
+    printf("FM amendment coefficient: %lf\n", sum[0]/REPEAT_TIME);
+    printf("LogLog amendment coefficient: %lf\n", sum[1]/REPEAT_TIME);
+    printf("HyperLogLog amendment coefficient: %lf\n", sum[2]/REPEAT_TIME);
+}
+
+double learn_trace() {
+    FILE* trace = fopen("./dataset/trace", "r");
+    double sum[3];
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        FM fm(4);
+        LogLog loglog(4);
+        HyperLogLog hyperloglog(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            trace_str(str, trace);
+            record.insert(string((char*)str, len));
+            fm.insert(str, len);
+            loglog.insert(str, len);
+            hyperloglog.insert(str, len);
+        }
+        sum[0] += fm.query(1)/record.query();
+        sum[1] += loglog.query(1)/record.query();
+        sum[2] += hyperloglog.query(1)/record.query();
+    }
+    printf("FM amendment coefficient: %lf\n", sum[0]/REPEAT_TIME);
+    printf("LogLog amendment coefficient: %lf\n", sum[1]/REPEAT_TIME);
+    printf("HyperLogLog amendment coefficient: %lf\n", sum[2]/REPEAT_TIME);
+    fclose(trace);
+
+}
+
+double learn_caida() {
+    FILE* caida = fopen("./dataset/caida", "r");
+    double sum[3];
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        FM fm(4);
+        LogLog loglog(4);
+        HyperLogLog hyperloglog(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            trace_str(str, caida);
+            record.insert(string((char*)str, len));
+            fm.insert(str, len);
+            loglog.insert(str, len);
+            hyperloglog.insert(str, len);
+        }
+        sum[0] += fm.query(1)/record.query();
+        sum[1] += loglog.query(1)/record.query();
+        sum[2] += hyperloglog.query(1)/record.query();
+    }
+    printf("FM amendment coefficient: %lf\n", sum[0]/REPEAT_TIME);
+    printf("LogLog amendment coefficient: %lf\n", sum[1]/REPEAT_TIME);
+    printf("HyperLogLog amendment coefficient: %lf\n", sum[2]/REPEAT_TIME);
+    fclose(caida);
+}
+
+double learn_penntreebank() {
+    FILE* ptb = fopen("./dataset/ptb", "r");
+    double sum[3];
+    memset(sum, 0, sizeof(sum));
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        FM fm(4);
+        LogLog loglog(4);
+        HyperLogLog hyperloglog(4);
+        for(int i = 0; i < STR_NUM; ++i) {
+            uint len = rand()%STR_LEN;
+            trace_str(str, ptb);
+            record.insert(string((char*)str, len));
+            fm.insert(str, len);
+            loglog.insert(str, len);
+            hyperloglog.insert(str, len);
+        }
+        sum[0] += fm.query(1)/record.query();
+        sum[1] += loglog.query(1)/record.query();
+        sum[2] += hyperloglog.query(1)/record.query();
+    }
+    printf("FM amendment coefficient: %lf\n", sum[0]/REPEAT_TIME);
+    printf("LogLog amendment coefficient: %lf\n", sum[1]/REPEAT_TIME);
+    printf("HyperLogLog amendment coefficient: %lf\n", sum[2]/REPEAT_TIME);
+    fclose(ptb);
+}
+
+void test_fm() {
+    // random_str
+    for(int k = 0; k < REPEAT_TIME; ++k) {
+        Record record;
+        FM fm_2(2);
+        FM fm_4(4);
+
+    }
+    //trace
+    //caida
+    //penn tree bank
+}
+
+void test_loglog() {
+
+}
+
+void test_hyperloglog() {
+
+}
+
 int main() {
     srand(time(0));
+
+    learn_random();
+    // FILE* trace = fopen("./dataset/trace", "r");
+    // FILE* caida = fopen("./dataset/caida", "r");
+    // FILE* penntreebank = fopen("./dataset/ptb", "r");
     // double sum = 0;
     // for(int k = 0; k < REPEAT_TIME; ++k) {
     //   Record record;
-    //   FM fm(4);
+    //   FM fm(2);
     //   for(int i = 0; i < STR_NUM; ++i) {
-    //     uint len = rand()%STR_LEN;
-    //     random_str(str, len);
-    //     record.insert(string((char*)str, (size_t)len));
-    //     fm.insert(str, len);
+    //     //uint len = rand()%STR_LEN;
+    //     //random_str(str, len);
+    //     //penntreebank_str(str, penntreebank);
+    //     trace_str(str, trace1);
+    //     //record.insert(string((char*)str, (size_t)len));
+    //     //fm.insert(str, len);
+    //     record.insert(string((char*)str, (size_t)strlen((const char*)str)));
+    //     fm.insert(str, strlen((const char*)str));
     //   }
-    //   printf("%u %lf\n", record.query(), fm.query(0.85));
-    //   result[k] = fm.query(0.85)/record.query();
-    //   //printf("%lf\n", result[k]);
-    //   sum += result[k];
+    //   printf("%u %lf\n", record.query(), fm.query(1));
+    //   sum += fm.query(1)/record.query();
     // }
     // printf("%lf\n", sum/REPEAT_TIME);
-    FILE* penntreebank = fopen("./dataset/ptb.train.txt", "r");
-    FILE* trace1 = fopen("./dataset/traces/1", "r");
-    FILE* trace2 = fopen("./dataset/traces/2", "r");
-    FILE* caida0 = fopen("./dataset/CAIDA/0.dat", "r");
-    double fm_sum = 0;
-    double loglog_sum = 0;
-    double hyperloglog_sum = 0;
-    for(int k = 0; k < REPEAT_TIME; ++k) {
-      Record record;
-      FM fm(2);
-      LogLog loglog(2);
-      HyperLogLog hyperloglog(2);
-      for(int i = 0; i < STR_NUM; ++i) {
-        //penntreebank_str(str, penntreebank);
-        //trace_str(str, trace1);
-        caida_str(str, caida0);
-        record.insert(string((char*)str, (size_t)strlen((const char*)str)));
-        fm.insert(str, strlen((const char*)str));
-        loglog.insert(str, strlen((const char*)str));
-        hyperloglog.insert(str, strlen((const char*)str));
-      }
-      loglog.print();
-      hyperloglog.print();
-      printf("%u %lf %lf %lf\n", record.query(), fm.query(1), loglog.query(1), hyperloglog.query(1));
-      //printf("%lf\n", result[k]);
-      fm_sum += fabs(fm.query(1)/record.query()-1);
-      loglog_sum += fabs(loglog.query(1)/record.query()-1);
-      hyperloglog_sum += fabs(hyperloglog.query(1)/record.query()-1);
-    }
-    printf("%lf %lf %lf\n", fm_sum/REPEAT_TIME, loglog_sum/REPEAT_TIME, hyperloglog_sum/REPEAT_TIME);
-    fclose(penntreebank);
+
+
+    // double fm_sum = 0;
+    // double loglog_sum = 0;
+    // double hyperloglog_sum = 0;
+    // for(int k = 0; k < REPEAT_TIME; ++k) {
+    //   Record record;
+    //   FM fm(2);
+    //   LogLog loglog(2);
+    //   HyperLogLog hyperloglog(2);
+    //   for(int i = 0; i < STR_NUM; ++i) {
+    //     //penntreebank_str(str, penntreebank);
+    //     //trace_str(str, trace1);
+    //     caida_str(str, caida0);
+    //     record.insert(string((char*)str, (size_t)strlen((const char*)str)));
+    //     fm.insert(str, strlen((const char*)str));
+    //     loglog.insert(str, strlen((const char*)str));
+    //     hyperloglog.insert(str, strlen((const char*)str));
+    //   }
+    //   fm.print();
+    //   //hyperloglog.print();
+    //   printf("%u %lf %lf %lf\n", record.query(), fm.query(), loglog.query(1), hyperloglog.query(1));
+    //   //printf("%lf\n", result[k]);
+    //   fm_sum += fabs(fm.query()/record.query()-1);
+    //   loglog_sum += fabs(loglog.query(1)/record.query()-1);
+    //   hyperloglog_sum += fabs(hyperloglog.query(1)/record.query()-1);
+    // }
+    // printf("%lf %lf %lf\n", fm_sum/REPEAT_TIME, loglog_sum/REPEAT_TIME, hyperloglog_sum/REPEAT_TIME);
+    // fclose(penntreebank);
+    // fclose(trace1);
+    // fclose(trace2);
+    // fclose(caida0);
     return 0;
 }

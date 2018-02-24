@@ -33,13 +33,12 @@ double HyperLogLog::query(double adjust=0.39701) {
         sum += 1.0/sketch[i];
         //sum += (dividend-1.0)*pow(dividend/(dividend-1.0), (double)pos)/adjust;
     }
-    printf("%lf\n", sum);
     return adjust*HYPERLOGLOG_HEIGHT*(dividend-1.0)*pow(dividend/(dividend-1.0), HYPERLOGLOG_HEIGHT/sum);
 }
 
 void HyperLogLog::print() {
     for(int i = 0; i < HYPERLOGLOG_HEIGHT; ++i) {
         printf("%u ", sketch[i]);
-        printf("\n");
     }
+    printf("\n");
 }

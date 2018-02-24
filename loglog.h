@@ -39,6 +39,6 @@ double LogLog::query(double adjust=0.39701) {
 void LogLog::print() {
     for(int i = 0; i < LOGLOG_HEIGHT; ++i) {
         printf("%u ", sketch[i]);
-        printf("\n");
     }
+    printf("\n");
 }
